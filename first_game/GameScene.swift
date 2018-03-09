@@ -12,8 +12,8 @@ import GameplayKit
 class GameScene: SKScene {
     
     let RADIUS : Double = 70.0
-    let WIDTH : Double = 1000.0
-    let HEIGHT : Double = 1000.0
+    let WIDTH : Double = Double(UIScreen.main.bounds.width)
+    let HEIGHT : Double = Double(UIScreen.main.bounds.height)
     private var circles : [CirclePhysics] = [CirclePhysics]()
     private var circleMap : [Int : SKShapeNode] = [Int : SKShapeNode]()
     private var label : SKLabelNode?
@@ -56,8 +56,10 @@ class GameScene: SKScene {
     }
     
     func touchUp(atPoint pos : CGPoint) {
+        print(WIDTH, HEIGHT)
         if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            self.circles.append(CirclePhysics(x: Double(pos.x), y: Double(pos.y), id: self.circles.count))
+            self.circles.append(CirclePhysics(x: Double(pos.x), y: Double(pos.y), m: 1.0, id: self.circles.count))
+            
             var Circle = SKShapeNode(circleOfRadius: CGFloat(RADIUS) ) // Size of Circle = Radius setting.
             Circle.position = pos  //touch location passed from touchesBegan.
             Circle.strokeColor = UIColor.white
@@ -66,9 +68,11 @@ class GameScene: SKScene {
                                        green: CGFloat(Float(arc4random()) / Float(UINT32_MAX)),
                                        blue:  CGFloat(Float(arc4random()) / Float(UINT32_MAX)),
                                        alpha: 1.0)
+            
             if let cir = self.circles.last {
                 self.circleMap[cir.id] = Circle
             }
+            
             self.addChild(Circle)
         }
     }
@@ -103,15 +107,22 @@ class GameScene: SKScene {
                 }
             }
             
-            if circle.x + RADIUS > WIDTH || circle.x - RADIUS < 0 {
+            if circle.x + RADIUS > WIDTH || circle.x - RADIUS < -1 * WIDTH {
                 circle.v_x = circle.v_x * -1
             }
-            if circle.y + RADIUS > HEIGHT || circle.y - RADIUS < 0 {
+            if circle.y + RADIUS > HEIGHT || circle.y - RADIUS < -1 * HEIGHT {
                 circle.v_y = circle.v_y * -1
             }
             
-            circle.x = circle.x + circle.v_x * currentTime
-            circle.y = circle.y + circle.v_y * currentTime
+            circle.x = circle.x + circle.v_x * currentTime / 100000.0
+            circle.y = circle.y + circle.v_y * currentTime / 100000.0
+        }
+        
+        for circle in self.circles {
+            if let drawableCircle = self.circleMap[circle.id] {
+                drawableCircle.position.x = CGFloat(circle.x)
+                drawableCircle.position.y = CGFloat(circle.y)
+            }
         }
     }
 }
