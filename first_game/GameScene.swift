@@ -11,6 +11,7 @@ import GameplayKit
 
 class GameScene: SKScene {
     
+    let motionDetector : MotionDetector = MotionDetector()
     let RADIUS : Double = 70.0
     let WIDTH : Double = Double(UIScreen.main.bounds.width)
     let HEIGHT : Double = Double(UIScreen.main.bounds.height)
@@ -42,23 +43,9 @@ class GameScene: SKScene {
         }
     }
     
-    
-    func touchDown(atPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-
-        }
-    }
-    
-    func touchMoved(toPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-
-        }
-    }
-    
     func touchUp(atPoint pos : CGPoint) {
-        print(WIDTH, HEIGHT)
         if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            self.circles.append(CirclePhysics(x: Double(pos.x), y: Double(pos.y), m: 1.0, id: self.circles.count))
+            self.circles.append(CirclePhysics(x: Double(pos.x), y: Double(pos.y), m: 2.0, id: self.circles.count))
             
             var Circle = SKShapeNode(circleOfRadius: CGFloat(RADIUS) ) // Size of Circle = Radius setting.
             Circle.position = pos  //touch location passed from touchesBegan.
@@ -77,25 +64,9 @@ class GameScene: SKScene {
         }
     }
     
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if let label = self.label {
-        }
-        
-        for t in touches { self.touchDown(atPoint: t.location(in: self)) }
-    }
-    
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchMoved(toPoint: t.location(in: self)) }
-    }
-    
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         for t in touches { self.touchUp(atPoint: t.location(in: self)) }
     }
-    
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchUp(atPoint: t.location(in: self)) }
-    }
-    
     
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
@@ -108,14 +79,16 @@ class GameScene: SKScene {
             }
             
             if circle.x + RADIUS > WIDTH || circle.x - RADIUS < -1 * WIDTH {
-                circle.v_x = circle.v_x * -1
+                circle.v_x = (circle.v_x) * -1
             }
             if circle.y + RADIUS > HEIGHT || circle.y - RADIUS < -1 * HEIGHT {
-                circle.v_y = circle.v_y * -1
+                circle.v_y = (circle.v_y) * -1
             }
             
             circle.x = circle.x + circle.v_x * currentTime / 100000.0
             circle.y = circle.y + circle.v_y * currentTime / 100000.0
+            circle.applyGravitationalForce(angle: self.motionDetector.getAngle())
+            circle.applyFriction()
         }
         
         for circle in self.circles {

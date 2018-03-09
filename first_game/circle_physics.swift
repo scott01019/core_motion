@@ -10,20 +10,30 @@ import Foundation
 
 
 class CirclePhysics {
+    
+    let MAX_THETA : Double = 2 * Double.pi
+    
     var id : Int
     var x : Double
     var y : Double
     var v_x : Double
     var v_y : Double
     var m : Double
+    var friction : Double
     
     init(x : Double, y : Double, m : Double, id : Int) {
         self.id = id
         self.x = x
         self.y = y
         self.m = m
-        self.v_x = 2.0
-        self.v_y = 2.0
+        self.v_x = 0.0
+        self.v_y = 0.0
+        self.friction = 0.999
+    }
+    
+    func applyGravitationalForce(angle: [String : Double]) {
+        self.v_x = self.v_x + (angle["x"]! / MAX_THETA * 1.0)
+        self.v_y = self.v_y + (angle["y"]! / MAX_THETA * 1.0)
     }
     
     func rotateVelocity(velocity: [String : Double], angle : Double) -> [String : Double] {
@@ -32,6 +42,11 @@ class CirclePhysics {
             "y": velocity["x"]! * sin(angle) + velocity["y"]! * cos(angle)
         ]
         return rotatedVelocity;
+    }
+    
+    func applyFriction() {
+        self.v_x = self.v_x * self.friction
+        self.v_y = self.v_y * self.friction
     }
     
     func resolveCollision(otherCircle : CirclePhysics) {
