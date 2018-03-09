@@ -62,15 +62,18 @@ class CirclePhysics {
             var u1 : [String : Double] = rotateVelocity(velocity: [ "x": self.v_x, "y": self.v_y ], angle: angle);
             var u2 : [String : Double] = rotateVelocity(velocity: [ "x": otherCircle.v_x, "y": otherCircle.v_y ], angle: angle);
             
+//          Use this if objects have different masses.
+//            let v1_x : Double = u1["x"]! * (self.m - otherCircle.m) / (self.m + otherCircle.m) + u2["x"]! * 2 * otherCircle.m / (self.m + otherCircle.m)
+//            let v2_x : Double = u2["x"]! * (self.m - otherCircle.m) / (self.m + otherCircle.m) + u1["x"]! * 2 * self.m / (self.m + otherCircle.m)
+//
+//            let v1 = [ "x": v1_x, "y": u1["y"] ];
+//            let v2 = [ "x": v2_x, "y": u2["y"] ];
+//
+//            var finalV1 = rotateVelocity(velocity: v1 as! [String : Double], angle: -1 * angle);
+//            var finalV2 = rotateVelocity(velocity: v2 as! [String : Double], angle: -1 * angle);
             
-            let v1_x : Double = u1["x"]! * (self.m - otherCircle.m) / (self.m + otherCircle.m) + u2["x"]! * 2 * otherCircle.m / (self.m + otherCircle.m)
-            let v2_x : Double = u2["x"]! * (self.m - otherCircle.m) / (self.m + otherCircle.m) + u1["x"]! * 2 * self.m / (self.m + otherCircle.m)
-            
-            let v1 = [ "x": v1_x, "y": u1["y"] ];
-            let v2 = [ "x": v2_x, "y": u2["y"] ];
-        
-            var finalV1 = rotateVelocity(velocity: v1 as! [String : Double], angle: -1 * angle);
-            var finalV2 = rotateVelocity(velocity: v2 as! [String : Double], angle: -1 * angle);
+            var finalV1 = rotateVelocity(velocity: [ "x": u2["x"]!, "y": u1["y"]! ], angle: -1 * angle);
+            var finalV2 = rotateVelocity(velocity: [ "x": u1["x"]!, "y": u2["y"]! ], angle: -1 * angle);
         
             self.v_x = finalV1["x"]!
             self.v_y = finalV1["y"]!
